@@ -1,40 +1,42 @@
-from django.shortcuts import render, get_object_or_404
-from ninja import Router, Query
-from ninja.pagination import paginate, PageNumberPagination
+from django.shortcuts import get_object_or_404
+from ninja import Query
+from ninja import Router
+from ninja.pagination import PageNumberPagination
+from ninja.pagination import paginate
 
-from typing import List
+from test_django_ninja.employee.models import Employee
+from test_django_ninja.employee.schemas import EmployeeSchema
+from test_django_ninja.users.schemas import Filters
 from test_django_ninja.utils.auth import BasicAuth
-from .models import Employee
-from .schemas import EmployeeSchema
-from ..users.schemas import Filters
 
 router = Router(
-            auth=BasicAuth(),
-            tags=["employee"]
+    auth=BasicAuth(),
+    tags=["employee"],
 )
 
 
-@router.get("get", response = List[EmployeeSchema])
+@router.get("get", response=list[EmployeeSchema])
 @paginate(PageNumberPagination, page_size=5)
 def get_employee(request, filters: Query[Filters]):
-    user_list = Employee.objects.all()
-    return user_list
+    return Employee.objects.all()
+
 
 @router.post("post", response=EmployeeSchema)
 def create_employee(request, data: EmployeeSchema):
-    user = Employee.objects.create(**data.dict())
-    return user
+    return Employee.objects.create(**data.dict())
 
-@router.put("put/{int:id}", response=EmployeeSchema)
-def update_employee(request, id: int, data: EmployeeSchema):
-    user = get_object_or_404(Employee, pk=id)
+
+@router.put("put/{int:pk}", response=EmployeeSchema)
+def update_employee(request, pk: int, data: EmployeeSchema):
+    user = get_object_or_404(Employee, pk=pk)
     for attr, value in data.dict().items():
         setattr(user, attr, value)
     user.save()
     return user
 
-@router.delete("delete/{int:id}")
-def delete_employee(request, id: int):
-    employee = get_object_or_404(Employee, pk=id)
+
+@router.delete("delete/{int:pk}")
+def delete_employee(request, pk: int):
+    employee = get_object_or_404(Employee, pk=pk)
     employee.delete()
     return {"success": True}

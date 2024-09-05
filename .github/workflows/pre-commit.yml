@@ -1,0 +1,49 @@
+# .pre-commit-ci.yaml
+ci:
+  # Auto update the pre-commit hooks weekly
+  autoupdate_schedule: weekly
+
+# Configure the CI settings
+default_language_version:
+  python: python3.12
+
+stages:
+  - commit
+
+# Configuration to include all repositories from the .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: detect-private-key
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: '1.20.0'
+    hooks:
+      - id: django-upgrade
+        args: ['--target-version', '5.0']
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.3
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  - repo: https://github.com/Riverside-Healthcare/djLint
+    rev: v1.35.2
+    hooks:
+      - id: djlint-reformat-django
+      - id: djlint-django
+
+exclude: '^docs/|/migrations/|devcontainer.json'

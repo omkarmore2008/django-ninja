@@ -1,9 +1,8 @@
-from ninja.schema import Schema, Field
-from typing import List
+from ninja.schema import Schema
 
 
 class GetUserSchema(Schema):
-    id:int
+    id: int
     username: str
     password: str
     is_superuser: bool
@@ -33,6 +32,7 @@ class Filters(Schema):
 class LoginSchema(Schema):
     username: str
     password: str
+
 
 class TokenSchema(Schema):
     access_token: str
